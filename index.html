@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    color: #fff;
+    font-family: monospace;
+    overflow: hidden;
+}
+
+#screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+#message {
+    font-size: 20px;
+    text-align: center;
+    z-index: 5;
+}
+
+.glitch {
+    animation: shake 0.08s infinite;
+}
+
+@keyframes shake {
+    0%   { transform: translate(0,0); }
+    25%  { transform: translate(5px,-3px); }
+    50%  { transform: translate(-4px,4px); }
+    75%  { transform: translate(3px,2px); }
+    100% { transform: translate(-2px,-3px); }
+}
+
+.scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(255,255,255,.04) 4px
+    );
+}
+
+.flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.red {
+    color: #ff3333;
+}
+
+#start {
+    padding: 15px 25px;
+    font-family: monospace;
+    font-size: 16px;
+    background: #111;
+    color: white;
+    border: 1px solid #555;
+}
+</style>
+</head>
+
+<body>
+
+<div id="screen">
+
+    <button id="start">START TEST</button>
+
+    <div id="message" style="display:none;">
+        <div id="text">INITIALIZING...</div>
+    </div>
+
+    <div class="scanlines"></div>
+    <div id="flash" class="flash"></div>
+
+</div>
+
+<script>
+
+const start = document.getElementById("start");
+const screen = document.getElementById("screen");
+const message = document.getElementById("message");
+const text = document.getElementById("text");
+const flash = document.getElementById("flash");
+
+let running = false;
+let startTime = 0;
+let animation;
+
+start.onclick = () => {
+
+    if (running) return;
+
+    running = true;
+    start.style.display = "none";
+    message.style.display = "block";
+
+    screen.classList.add("glitch");
+
+    startTime = performance.now();
+
+    run();
+
+};
+
+function run() {
+
+    if (!running) return;
+
+    const elapsed = performance.now() - startTime;
+
+    if (elapsed > 10000) {
+        stop();
+        return;
+    }
+
+    // Controlled CPU workload
+    let value = 0;
+
+    for (let i = 0; i < 15000; i++) {
+        value += Math.sin(i) * Math.cos(i * 0.5);
+    }
+
+    // Change the fake system message
+    if (elapsed < 2500) {
+        text.textContent = "INITIALIZING...";
+    }
+    else if (elapsed < 5000) {
+        text.innerHTML = '<span class="red">SYSTEM ERROR</span>';
+    }
+    else if (elapsed < 7500) {
+        text.innerHTML = '<span class="red">PROCESSING...</span>';
+    }
+    else {
+        text.innerHTML = '<span class="red">UNSTABLE SYSTEM</span>';
+    }
+
+    // Random screen flashes
+    if (Math.random() < 0.08) {
+        flash.style.opacity = "0.15";
+
+        setTimeout(() => {
+            flash.style.opacity = "0";
+        }, 30);
+    }
+
+    animation = requestAnimationFrame(run);
+}
+
+function stop() {
+
+    running = false;
+
+    cancelAnimationFrame(animation);
+
+    screen.classList.remove("glitch");
+
+    text.textContent = "TEST COMPLETE";
+
+    setTimeout(() => {
+        text.textContent = "READY";
+    }, 1500);
+}
+
+</script>
+
+</body>
+</html>
