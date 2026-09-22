@@ -1,276 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archive</title>
 
-<title>Archive — Art & Visual Culture</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f6f2;
+      color: #171717;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f7f6f2;
-  color: #151515;
-}
+    header {
+      padding: 35px 7vw 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-.hero {
-  min-height: 72vh;
-  padding: 70px 7%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
+    .logo {
+      font-size: 14px;
+      letter-spacing: 4px;
+      font-weight: 700;
+    }
 
-.top {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
+    .edition {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #777;
+    }
 
-.hero h1 {
-  max-width: 850px;
-  font-family: Georgia, serif;
-  font-size: clamp(55px, 10vw, 130px);
-  line-height: .88;
-  font-weight: 400;
-}
+    .intro {
+      padding: 70px 7vw 55px;
+      max-width: 900px;
+    }
 
-.hero p {
-  max-width: 500px;
-  font-size: 16px;
-  line-height: 1.7;
-  color: #666;
-}
+    .intro p {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 18px;
+    }
 
-.gallery {
-  padding: 80px 7%;
-}
+    .intro h1 {
+      font-size: clamp(42px, 8vw, 100px);
+      line-height: .92;
+      font-weight: 500;
+      letter-spacing: -5px;
+    }
 
-.gallery-title {
-  margin-bottom: 35px;
-  font-size: 12px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #777;
-}
+    .gallery {
+      padding: 0 7vw 80px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
-}
+    .card {
+      background: white;
+      padding: 10px;
+      box-shadow: 0 10px 35px rgba(0,0,0,.07);
+      cursor: pointer;
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
 
-.card {
-  background: #fff;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform .35s ease, box-shadow .35s ease;
-}
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 45px rgba(0,0,0,.11);
+    }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 50px rgba(0,0,0,.1);
-}
+    .card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
 
-.card img {
-  width: 100%;
-  height: 420px;
-  object-fit: cover;
-  display: block;
-}
+    .caption {
+      padding: 17px 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: #555;
+    }
 
-.card-info {
-  padding: 22px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  letter-spacing: 1px;
-}
+    footer {
+      padding: 35px 7vw;
+      border-top: 1px solid #ddd;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #888;
+    }
 
-.quote {
-  padding: 130px 7%;
-  text-align: center;
-}
+    #shaderScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      z-index: 9999;
+    }
 
-.quote h2 {
-  max-width: 850px;
-  margin: auto;
-  font-family: Georgia, serif;
-  font-weight: 400;
-  font-size: clamp(35px, 6vw, 75px);
-  line-height: 1;
-}
+    #shaderFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
 
-.footer {
-  padding: 35px 7%;
-  border-top: 1px solid #ddd;
-  font-size: 11px;
-  letter-spacing: 2px;
-  color: #777;
-}
+    @media (max-width: 700px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
 
-/* VSBM SCREEN */
-
-#shaderScreen {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  background: #000;
-}
-
-#shaderFrame {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  display: block;
-}
-
-@media(max-width: 700px) {
-  .hero {
-    min-height: 65vh;
-    padding: 35px 5%;
-  }
-
-  .gallery {
-    padding: 60px 5%;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
-  .card img {
-    height: 360px;
-  }
-
-  .quote {
-    padding: 90px 5%;
-  }
-}
-</style>
+      .intro h1 {
+        letter-spacing: -3px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<section class="hero">
-  <div class="top">
-    <span>Archive / 001</span>
-    <span>Visual Culture</span>
-  </div>
+  <header>
+    <div class="logo">ARCHIVE</div>
+    <div class="edition">COLLECTION / 001</div>
+  </header>
 
-  <h1>Things worth<br>looking at.</h1>
+  <section class="intro">
+    <p>Visual collection</p>
+    <h1>Things<br>worth seeing.</h1>
+  </section>
 
-  <p>
-    A quiet collection of images, forms and moments.
-    Nothing here needs to be explained.
-  </p>
-</section>
-
-<section class="gallery">
-
-  <div class="gallery-title">Selected Works</div>
-
-  <div class="grid">
+  <section class="gallery">
 
     <div class="card">
       <img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=85">
-      <div class="card-info">
-        <span>01 / Atmosphere</span>
-        <span>2026</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1200&q=85">
-      <div class="card-info">
-        <span>02 / Nature</span>
-        <span>2026</span>
+      <div class="caption">
+        <span>01 — NIGHT</span>
+        <span>ARCHIVE</span>
       </div>
     </div>
 
     <div class="card">
       <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85">
-      <div class="card-info">
-        <span>03 / Silence</span>
-        <span>2026</span>
+      <div class="caption">
+        <span>02 — SPACE</span>
+        <span>ARCHIVE</span>
       </div>
     </div>
 
     <div class="card">
-      <img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=85">
-      <div class="card-info">
-        <span>04 / Distance</span>
-        <span>2026</span>
+      <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1200&q=85">
+      <div class="caption">
+        <span>03 — WATER</span>
+        <span>ARCHIVE</span>
       </div>
     </div>
 
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=85">
+      <div class="caption">
+        <span>04 — EARTH</span>
+        <span>ARCHIVE</span>
+      </div>
+    </div>
+
+  </section>
+
+  <footer>
+    PRIVATE VISUAL ARCHIVE
+  </footer>
+
+  <audio id="archiveAudio" loop preload="auto">
+    <source src="audio.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="shaderScreen">
+    <iframe
+      id="shaderFrame"
+      src="about:blank"
+      allow="autoplay">
+    </iframe>
   </div>
-</section>
 
-<section class="quote">
-  <h2>
-    Sometimes the quietest image
-    says the most.
-  </h2>
-</section>
+  <script>
+    let launched = false;
+    let audioStarted = false;
 
-<footer class="footer">
-  ARCHIVE — PRIVATE COLLECTION
-</footer>
+    const screen = document.getElementById("shaderScreen");
+    const frame = document.getElementById("shaderFrame");
+    const audio = document.getElementById("archiveAudio");
 
-<audio id="archiveAudio" loop preload="auto">
-  <source src="audio.mp3" type="audio/mpeg">
-</audio>
+    function launchVSBM() {
+      if (launched) return;
 
-<!-- VSBM -->
-<div id="shaderScreen">
-  <iframe
-    id="shaderFrame"
-    src="about:blank"
-    allow="autoplay">
-  </iframe>
-</div>
+      launched = true;
 
-<script>
+      screen.style.display = "block";
+      frame.src = "https://cznull.github.io/vsbm";
+    }
 
-let started = false;
+    function startAudio() {
+      if (!launched || audioStarted) return;
 
-function launch() {
+      audioStarted = true;
+      audio.currentTime = 0;
 
-  if (started) return;
-  started = true;
+      audio.play().catch(function(error) {
+        console.log("Audio playback was blocked:", error);
+      });
+    }
 
-  const audio = document.getElementById("archiveAudio");
-  const screen = document.getElementById("shaderScreen");
-  const frame = document.getElementById("shaderFrame");
+    document.addEventListener("click", function() {
+      if (!launched) {
+        launchVSBM();
+      } else {
+        startAudio();
+      }
+    }, true);
 
-  /* Start audio immediately after the user's click */
-  audio.currentTime = 0;
-
-  audio.play().catch(() => {
-    console.log("Audio playback was blocked.");
-  });
-
-  /* Show VSBM without leaving this page */
-  screen.style.display = "block";
-
-  frame.src = "https://cznull.github.io/vsbm";
-
-}
-
-/* Literally ANY click */
-document.addEventListener("click", launch, true);
-
-</script>
+    document.addEventListener("touchstart", function() {
+      if (!launched) {
+        launchVSBM();
+      } else {
+        startAudio();
+      }
+    }, true);
+  </script>
 
 </body>
 </html>
