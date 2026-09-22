@@ -1,245 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>System Diagnostic</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VSBM</title>
 
-<style>
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#050505;
-  color:#00ff66;
-  font-family:monospace;
-}
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
 
-#screen{
-  width:100%;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
+    button {
+      margin: 30px;
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+    }
 
-#title{
-  font-size:28px;
-  margin-bottom:20px;
-}
+    #site {
+      width: 100%;
+      height: 80vh;
+    }
 
-#status{
-  margin:15px;
-  color:#ff3030;
-  min-height:24px;
-}
-
-input{
-  width:75%;
-}
-
-button{
-  margin:8px;
-  padding:12px 25px;
-  background:#111;
-  color:#00ff66;
-  border:1px solid #00ff66;
-  border-radius:5px;
-}
-
-#glitch{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  mix-blend-mode:difference;
-}
-
-.popup{
-  position:fixed;
-  padding:12px 18px;
-  background:#050505;
-  border:1px solid #ff3030;
-  color:#ff3030;
-  font-size:14px;
-  box-shadow:0 0 15px #ff0000;
-  animation:shake .08s infinite;
-}
-
-@keyframes shake{
-  0%{transform:translate(0,0)}
-  25%{transform:translate(3px,-2px)}
-  50%{transform:translate(-3px,2px)}
-  75%{transform:translate(2px,3px)}
-  100%{transform:translate(-2px,-3px)}
-}
-
-.flash{
-  position:fixed;
-  inset:0;
-  background:white;
-  opacity:.08;
-  pointer-events:none;
-}
-</style>
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
 
 <body>
 
-<div id="screen">
-  <div id="title">SYSTEM DIAGNOSTIC</div>
+  <button onclick="startTest()">START</button>
 
-  <div>
-    LOAD:
-    <span id="value">40</span>%
-  </div>
+  <div id="site"></div>
 
-  <input id="slider" type="range" min="10" max="80" value="40">
-
-  <div id="status">READY</div>
-
-  <div>
-    <button onclick="start()">START TEST</button>
-    <button onclick="stop()">STOP</button>
-  </div>
-</div>
-
-<div id="glitch"></div>
-
-<script>
-let workers = [];
-let running = false;
-let endTimer;
-let popupTimer;
-let flashTimer;
-
-const slider = document.getElementById("slider");
-const value = document.getElementById("value");
-const status = document.getElementById("status");
-
-slider.oninput = () => {
-  value.textContent = slider.value;
-};
-
-function makeWorker(){
-  const code = `
-    let running = true;
-
-    self.onmessage = e => {
-      if(e.data === "stop"){
-        running = false;
-        return;
-      }
-
-      const intensity = e.data;
-
-      while(running){
-        let x = Math.random();
-
-        // Real floating-point computation
-        for(let i=0;i<intensity*12000;i++){
-          x = Math.sin(x) * Math.cos(x);
-          x = Math.sqrt(Math.abs(x) + 0.000001);
-          x = Math.tan(x) * 0.999999;
-        }
-      }
-    };
-  `;
-
-  const blob = new Blob([code],{type:"application/javascript"});
-  return new Worker(URL.createObjectURL(blob));
-}
-
-function start(){
-  if(running) return;
-
-  running = true;
-
-  const intensity = Number(slider.value);
-
-  status.textContent = "HIGH LOAD — PROCESSING...";
-
-  // Number of workers is deliberately capped.
-  const workerCount = Math.min(
-    Math.max(2, navigator.hardwareConcurrency || 4),
-    6
-  );
-
-  for(let i=0;i<workerCount;i++){
-    const w = makeWorker();
-    workers.push(w);
-    w.postMessage(intensity);
-  }
-
-  popupTimer = setInterval(createPopup,120);
-  flashTimer = setInterval(glitch,250);
-
-  // Hard automatic shutdown.
-  endTimer = setTimeout(stop,10000);
-}
-
-function stop(){
-  if(!running) return;
-
-  running = false;
-
-  clearTimeout(endTimer);
-  clearInterval(popupTimer);
-  clearInterval(flashTimer);
-
-  workers.forEach(w=>{
-    try{
-      w.postMessage("stop");
-      w.terminate();
-    }catch(e){}
-  });
-
-  workers = [];
-
-  document.querySelectorAll(".popup,.flash").forEach(e=>e.remove());
-
-  status.textContent = "TEST COMPLETE";
-}
-
-function createPopup(){
-  const p = document.createElement("div");
-  p.className = "popup";
-
-  const messages = [
-    "PROCESS ERROR",
-    "MEMORY CHECK",
-    "SYSTEM BUSY",
-    "THREAD FAILURE",
-    "PROCESSING...",
-    "HIGH CPU ACTIVITY",
-    "SYSTEM WARNING",
-    "BUFFER OVERLOAD"
-  ];
-
-  p.textContent =
-    messages[Math.floor(Math.random()*messages.length)];
-
-  p.style.left = Math.random()*85 + "%";
-  p.style.top = Math.random()*85 + "%";
-
-  document.body.appendChild(p);
-
-  if(document.querySelectorAll(".popup").length > 45){
-    document.querySelector(".popup")?.remove();
-  }
-}
-
-function glitch(){
-  const f = document.createElement("div");
-  f.className = "flash";
-  document.body.appendChild(f);
-
-  setTimeout(()=>f.remove(),80);
-
-  document.getElementById("glitch").style.transform =
-    `translate(${Math.random()*8-4}px,${Math.random()*8-4}px)`;
-}
-</script>
+  <script>
+    function startTest() {
+      document.getElementById("site").innerHTML = `
+        <iframe src="https://cznull.github.io/vsbm"></iframe>
+      `;
+    }
+  </script>
 
 </body>
 </html>
