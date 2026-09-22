@@ -2,81 +2,99 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>System</title>
+<title>System Test</title>
 
 <style>
-* {
-    box-sizing: border-box;
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#050505;
+    color:#fff;
+    font-family:monospace;
 }
 
-html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    color: #fff;
-    font-family: monospace;
-    overflow: hidden;
+#screen{
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow:hidden;
 }
 
-#screen {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+#controls{
+    position:absolute;
+    z-index:10000;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:min(85%,360px);
+    padding:22px;
+    background:#111;
+    border:1px solid #444;
 }
 
-#message {
-    font-size: 20px;
-    text-align: center;
-    z-index: 5;
+input{
+    width:100%;
 }
 
-.glitch {
-    animation: shake 0.08s infinite;
+button{
+    margin-top:15px;
+    padding:12px 20px;
+    background:#222;
+    color:white;
+    border:1px solid #666;
+    font-family:monospace;
 }
 
-@keyframes shake {
-    0%   { transform: translate(0,0); }
-    25%  { transform: translate(5px,-3px); }
-    50%  { transform: translate(-4px,4px); }
-    75%  { transform: translate(3px,2px); }
-    100% { transform: translate(-2px,-3px); }
+#status{
+    margin-top:12px;
+    font-size:13px;
 }
 
-.scanlines {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 3px,
-        rgba(255,255,255,.04) 4px
-    );
+.popup{
+    position:absolute;
+    width:150px;
+    min-height:65px;
+    padding:10px;
+    background:#080808;
+    border:1px solid #aaa;
+    color:#fff;
+    font-size:12px;
+    z-index:20;
+    box-shadow:0 0 10px #000;
 }
 
-.flash {
-    position: absolute;
-    inset: 0;
-    background: white;
-    opacity: 0;
-    pointer-events: none;
+.glitch{
+    animation:shake .07s infinite;
 }
 
-.red {
-    color: #ff3333;
+@keyframes shake{
+    0%{transform:translate(0,0)}
+    25%{transform:translate(5px,-3px)}
+    50%{transform:translate(-4px,3px)}
+    75%{transform:translate(3px,2px)}
+    100%{transform:translate(-2px,-3px)}
 }
 
-#start {
-    padding: 15px 25px;
-    font-family: monospace;
-    font-size: 16px;
-    background: #111;
-    color: white;
-    border: 1px solid #555;
+.flash{
+    position:absolute;
+    inset:0;
+    background:white;
+    opacity:0;
+    pointer-events:none;
+    z-index:9999;
+}
+
+#mainText{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    font-size:20px;
+    z-index:10;
+    pointer-events:none;
 }
 </style>
 </head>
@@ -85,104 +103,195 @@ html, body {
 
 <div id="screen">
 
-    <button id="start">START TEST</button>
+    <div id="controls">
+        <div>WORKLOAD: <span id="level">40</span></div>
 
-    <div id="message" style="display:none;">
-        <div id="text">INITIALIZING...</div>
+        <input
+            id="slider"
+            type="range"
+            min="10"
+            max="80"
+            value="40"
+        >
+
+        <button id="start">START TEST</button>
+        <button id="stop">STOP</button>
+
+        <div id="status">Ready.</div>
     </div>
 
-    <div class="scanlines"></div>
-    <div id="flash" class="flash"></div>
+    <div id="mainText"></div>
+    <div class="flash" id="flash"></div>
 
 </div>
 
 <script>
-
-const start = document.getElementById("start");
 const screen = document.getElementById("screen");
-const message = document.getElementById("message");
-const text = document.getElementById("text");
+const controls = document.getElementById("controls");
+const slider = document.getElementById("slider");
+const level = document.getElementById("level");
+const start = document.getElementById("start");
+const stop = document.getElementById("stop");
+const status = document.getElementById("status");
+const mainText = document.getElementById("mainText");
 const flash = document.getElementById("flash");
 
 let running = false;
 let startTime = 0;
-let animation;
+let frame = 0;
+let popupTimer = null;
+let popupCount = 0;
 
-start.onclick = () => {
+slider.addEventListener("input", () => {
+    level.textContent = slider.value;
+});
+
+start.addEventListener("click", () => {
 
     if (running) return;
 
     running = true;
-    start.style.display = "none";
-    message.style.display = "block";
-
-    screen.classList.add("glitch");
-
     startTime = performance.now();
 
-    run();
+    controls.style.display = "none";
+    screen.classList.add("glitch");
 
-};
+    status.textContent = "Running...";
+    popupCount = 0;
 
-function run() {
+    mainText.textContent = "INITIALIZING...";
+
+    popupTimer = setInterval(createPopup, 180);
+
+    frame = requestAnimationFrame(work);
+
+});
+
+stop.addEventListener("click", stopTest);
+
+
+function createPopup(){
 
     if (!running) return;
 
-    const elapsed = performance.now() - startTime;
+    // Hard visual limit so the page cannot grow without bound.
+    if (popupCount >= 70) return;
 
-    if (elapsed > 10000) {
-        stop();
+    const p = document.createElement("div");
+
+    p.className = "popup";
+
+    const messages = [
+        "SYSTEM ERROR",
+        "PROCESS FAILED",
+        "MEMORY CHECK",
+        "UNEXPECTED RESPONSE",
+        "PROCESSING...",
+        "WARNING",
+        "RETRYING...",
+        "SYSTEM BUSY"
+    ];
+
+    p.textContent =
+        messages[Math.floor(Math.random() * messages.length)];
+
+    p.style.left =
+        Math.random() * Math.max(1, innerWidth - 170) + "px";
+
+    p.style.top =
+        Math.random() * Math.max(1, innerHeight - 90) + "px";
+
+    screen.appendChild(p);
+
+    popupCount++;
+}
+
+
+function work(now){
+
+    if (!running) return;
+
+    const elapsed = now - startTime;
+
+    // Automatic 15-second safety cutoff.
+    if(elapsed >= 15000){
+        stopTest();
         return;
     }
 
-    // Controlled CPU workload
-    let value = 0;
+    const intensity = Number(slider.value);
 
-    for (let i = 0; i < 15000; i++) {
-        value += Math.sin(i) * Math.cos(i * 0.5);
+    /*
+       Bounded CPU workload.
+       Higher slider = more calculations per animation frame.
+    */
+
+    const iterations = Math.floor(3000 + intensity * 350);
+
+    let result = 0;
+
+    for(let i = 0; i < iterations; i++){
+
+        result +=
+            Math.sin(i * 0.17) *
+            Math.cos(i * 0.31) *
+            Math.sqrt((i % 97) + 1);
+
     }
 
-    // Change the fake system message
-    if (elapsed < 2500) {
-        text.textContent = "INITIALIZING...";
+    // Change the displayed state.
+    if(elapsed < 3000){
+        mainText.textContent = "INITIALIZING...";
     }
-    else if (elapsed < 5000) {
-        text.innerHTML = '<span class="red">SYSTEM ERROR</span>';
+    else if(elapsed < 6000){
+        mainText.textContent = "PROCESSING...";
     }
-    else if (elapsed < 7500) {
-        text.innerHTML = '<span class="red">PROCESSING...</span>';
+    else if(elapsed < 10000){
+        mainText.textContent = "SYSTEM ERROR";
     }
-    else {
-        text.innerHTML = '<span class="red">UNSTABLE SYSTEM</span>';
+    else{
+        mainText.textContent = "SYSTEM UNSTABLE";
     }
 
-    // Random screen flashes
-    if (Math.random() < 0.08) {
-        flash.style.opacity = "0.15";
+    // Occasional visual flash.
+    if(Math.random() < 0.04){
+
+        flash.style.opacity = ".18";
 
         setTimeout(() => {
             flash.style.opacity = "0";
-        }, 30);
+        }, 35);
+
     }
 
-    animation = requestAnimationFrame(run);
+    frame = requestAnimationFrame(work);
 }
 
-function stop() {
+
+function stopTest(){
+
+    if(!running) return;
 
     running = false;
 
-    cancelAnimationFrame(animation);
+    cancelAnimationFrame(frame);
+
+    clearInterval(popupTimer);
 
     screen.classList.remove("glitch");
 
-    text.textContent = "TEST COMPLETE";
+    document.querySelectorAll(".popup").forEach(p => p.remove());
+
+    mainText.textContent = "TEST COMPLETE";
+
+    controls.style.display = "block";
+
+    status.textContent = "Stopped. Everything cleaned up.";
 
     setTimeout(() => {
-        text.textContent = "READY";
+        mainText.textContent = "";
     }, 1500);
 }
-
 </script>
 
 </body>
