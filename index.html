@@ -1,245 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Archive</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<title>Archive</title>
 
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f7f6f2;
-      color: #171717;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-    header {
-      padding: 35px 7vw 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+html,body{
+  width:100%;
+  min-height:100%;
+}
 
-    .logo {
-      font-size: 14px;
-      letter-spacing: 4px;
-      font-weight: 700;
-    }
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f7f6f2;
+  color:#171717;
+}
 
-    .edition {
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: #777;
-    }
+header{
+  padding:35px 7vw 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .intro {
-      padding: 70px 7vw 55px;
-      max-width: 900px;
-    }
+.logo{
+  font-size:14px;
+  letter-spacing:4px;
+  font-weight:700;
+}
 
-    .intro p {
-      font-size: 12px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #888;
-      margin-bottom: 18px;
-    }
+.edition{
+  font-size:11px;
+  letter-spacing:2px;
+  color:#777;
+}
 
-    .intro h1 {
-      font-size: clamp(42px, 8vw, 100px);
-      line-height: .92;
-      font-weight: 500;
-      letter-spacing: -5px;
-    }
+.intro{
+  padding:70px 7vw 55px;
+  max-width:900px;
+}
 
-    .gallery {
-      padding: 0 7vw 80px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 28px;
-    }
+.intro p{
+  font-size:12px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:#888;
+  margin-bottom:18px;
+}
 
-    .card {
-      background: white;
-      padding: 10px;
-      box-shadow: 0 10px 35px rgba(0,0,0,.07);
-      cursor: pointer;
-      transition: transform .3s ease, box-shadow .3s ease;
-    }
+.intro h1{
+  font-size:clamp(42px,8vw,100px);
+  line-height:.92;
+  font-weight:500;
+  letter-spacing:-5px;
+}
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 18px 45px rgba(0,0,0,.11);
-    }
+.gallery{
+  padding:0 7vw 80px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:28px;
+}
 
-    .card img {
-      display: block;
-      width: 100%;
-      aspect-ratio: 4 / 3;
-      object-fit: cover;
-    }
+.card{
+  background:white;
+  padding:10px;
+  box-shadow:0 10px 35px rgba(0,0,0,.07);
+  cursor:pointer;
+  transition:.3s;
+}
 
-    .caption {
-      padding: 17px 8px 12px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      color: #555;
-    }
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 18px 45px rgba(0,0,0,.11);
+}
 
-    footer {
-      padding: 35px 7vw;
-      border-top: 1px solid #ddd;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: #888;
-    }
+.card img{
+  display:block;
+  width:100%;
+  aspect-ratio:4/3;
+  object-fit:cover;
+}
 
-    #shaderScreen {
-      display: none;
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      background: black;
-      z-index: 9999;
-    }
+.caption{
+  padding:17px 8px 12px;
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  letter-spacing:1.5px;
+  color:#555;
+}
 
-    #shaderFrame {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
+footer{
+  padding:35px 7vw;
+  border-top:1px solid #ddd;
+  font-size:10px;
+  letter-spacing:2px;
+  color:#888;
+}
 
-    @media (max-width: 700px) {
-      .gallery {
-        grid-template-columns: 1fr;
-      }
 
-      .intro h1 {
-        letter-spacing: -3px;
-      }
-    }
-  </style>
+/* VSBM */
+
+#shaderScreen{
+  display:none;
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  background:#000;
+  z-index:9999;
+}
+
+#shaderFrame{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block;
+}
+
+
+/* AUDIO ACTIVATION */
+
+#audioTap{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  background:transparent;
+  cursor:pointer;
+}
+
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  .gallery{
+    grid-template-columns:1fr;
+  }
+
+  .intro h1{
+    letter-spacing:-3px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <header>
-    <div class="logo">ARCHIVE</div>
-    <div class="edition">COLLECTION / 001</div>
-  </header>
+<header>
+  <div class="logo">ARCHIVE</div>
+  <div class="edition">COLLECTION / 001</div>
+</header>
 
-  <section class="intro">
-    <p>Visual collection</p>
-    <h1>Things<br>worth seeing.</h1>
-  </section>
+<section class="intro">
+  <p>Visual collection</p>
 
-  <section class="gallery">
+  <h1>
+    Things<br>
+    worth seeing.
+  </h1>
+</section>
 
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=85">
-      <div class="caption">
-        <span>01 — NIGHT</span>
-        <span>ARCHIVE</span>
-      </div>
+<section class="gallery">
+
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=85">
+
+    <div class="caption">
+      <span>01 — NIGHT</span>
+      <span>ARCHIVE</span>
     </div>
-
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85">
-      <div class="caption">
-        <span>02 — SPACE</span>
-        <span>ARCHIVE</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1200&q=85">
-      <div class="caption">
-        <span>03 — WATER</span>
-        <span>ARCHIVE</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=85">
-      <div class="caption">
-        <span>04 — EARTH</span>
-        <span>ARCHIVE</span>
-      </div>
-    </div>
-
-  </section>
-
-  <footer>
-    PRIVATE VISUAL ARCHIVE
-  </footer>
-
-  <audio id="archiveAudio" loop preload="auto">
-    <source src="audio.mp3" type="audio/mpeg">
-  </audio>
-
-  <div id="shaderScreen">
-    <iframe
-      id="shaderFrame"
-      src="about:blank"
-      allow="autoplay">
-    </iframe>
   </div>
 
-  <script>
-    let launched = false;
-    let audioStarted = false;
 
-    const screen = document.getElementById("shaderScreen");
-    const frame = document.getElementById("shaderFrame");
-    const audio = document.getElementById("archiveAudio");
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85">
 
-    function launchVSBM() {
-      if (launched) return;
+    <div class="caption">
+      <span>02 — SPACE</span>
+      <span>ARCHIVE</span>
+    </div>
+  </div>
 
-      launched = true;
 
-      screen.style.display = "block";
-      frame.src = "https://cznull.github.io/vsbm";
-    }
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1200&q=85">
 
-    function startAudio() {
-      if (!launched || audioStarted) return;
+    <div class="caption">
+      <span>03 — WATER</span>
+      <span>ARCHIVE</span>
+    </div>
+  </div>
 
-      audioStarted = true;
-      audio.currentTime = 0;
 
-      audio.play().catch(function(error) {
-        console.log("Audio playback was blocked:", error);
-      });
-    }
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=85">
 
-    document.addEventListener("click", function() {
-      if (!launched) {
-        launchVSBM();
-      } else {
-        startAudio();
-      }
-    }, true);
+    <div class="caption">
+      <span>04 — EARTH</span>
+      <span>ARCHIVE</span>
+    </div>
+  </div>
 
-    document.addEventListener("touchstart", function() {
-      if (!launched) {
-        launchVSBM();
-      } else {
-        startAudio();
-      }
-    }, true);
-  </script>
+</section>
+
+<footer>
+  PRIVATE VISUAL ARCHIVE
+</footer>
+
+
+<!-- AUDIO -->
+
+<audio id="archiveAudio" loop preload="auto">
+  <source src="audio.mp3" type="audio/mpeg">
+</audio>
+
+
+<!-- VSBM -->
+
+<div id="shaderScreen">
+
+  <iframe
+    id="shaderFrame"
+    src="about:blank"
+    allow="autoplay">
+  </iframe>
+
+</div>
+
+
+<!-- INVISIBLE AUDIO TAP -->
+
+<div id="audioTap"></div>
+
+
+<script>
+
+const shaderScreen =
+  document.getElementById("shaderScreen");
+
+const shaderFrame =
+  document.getElementById("shaderFrame");
+
+const audio =
+  document.getElementById("archiveAudio");
+
+const audioTap =
+  document.getElementById("audioTap");
+
+let launched = false;
+let playing = false;
+
+
+/*
+  FIRST CLICK
+  Open VSBM.
+*/
+
+function launch(){
+
+  if(launched) return;
+
+  launched = true;
+
+  shaderScreen.style.display = "block";
+
+  shaderFrame.src =
+    "https://cznull.github.io/vsbm";
+
+  /*
+    Give VSBM time to appear,
+    then enable the audio tap.
+  */
+
+  setTimeout(function(){
+
+    audioTap.style.display = "block";
+
+  },1200);
+
+}
+
+
+/*
+  AUDIO
+  Starts from a real user interaction.
+*/
+
+function playAudio(){
+
+  if(playing) return;
+
+  playing = true;
+
+  audio.currentTime = 0;
+
+  audio.volume = 1;
+
+  const promise = audio.play();
+
+  if(promise !== undefined){
+
+    promise.catch(function(){
+
+      playing = false;
+
+    });
+
+  }
+
+  /*
+    Remove overlay after activation
+    so VSBM becomes fully interactive again.
+  */
+
+  audioTap.style.display = "none";
+
+}
+
+
+/*
+  Gallery click → VSBM
+*/
+
+document.addEventListener("click",function(e){
+
+  if(!launched){
+
+    launch();
+
+  }
+
+},true);
+
+
+/*
+  After VSBM popup is dismissed,
+  tap/click the screen → audio starts.
+*/
+
+audioTap.addEventListener("click",function(e){
+
+  e.preventDefault();
+
+  playAudio();
+
+},true);
+
+
+/*
+  Touchscreen support
+*/
+
+audioTap.addEventListener("touchend",function(e){
+
+  e.preventDefault();
+
+  playAudio();
+
+},true);
+
+</script>
 
 </body>
 </html>
